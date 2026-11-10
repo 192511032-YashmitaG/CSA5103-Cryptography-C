@@ -1,0 +1,6 @@
+exponent_bits,modular_multiplications,execution_time_microseconds
+8,9,10.4
+16,26,10.0
+32,58,18.4
+64,122,37.9
+128,250,57.3

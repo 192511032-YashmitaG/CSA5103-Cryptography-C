@@ -1,0 +1,5 @@
+candidate,trial_division_prime,fermat_pass,miller_rabin_pass,trial_division_steps
+97,True,True,True,8
+561,False,True,False,2
+1105,False,True,False,4
+1729,False,True,False,6

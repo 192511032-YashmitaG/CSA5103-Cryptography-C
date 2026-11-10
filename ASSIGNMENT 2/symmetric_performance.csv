@@ -1,0 +1,5 @@
+message_size_bytes,toy_block_calls,execution_time_microseconds,ciphertext_bytes
+64,16,294.2,64
+256,64,668.6,256
+1024,256,3734.3,1024
+4096,1024,11595.1,4096
