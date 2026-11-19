@@ -1,0 +1,66 @@
+\n[TASK 1] PGP-style hybrid secure mail
+session-key-id=6898493585f7 (key not printed)
+message=344B compressed=56B ciphertext=72B
+recipients=5 RSA-wrap-operations=5 AES-encryptions=1 encoded-package=3016B
+receiver plaintext recovered=True; signature=VALID; signer=Laboratory
+tamper-test=REJECTED (AES-GCM authentication tag mismatch)
+\n[TASK 2] S/MIME vs PGP trust-engineering demonstration
+normal: ACCEPT (expected ACCEPT)
+expired: REJECT (expected REJECT)
+untrusted issuer: REJECT (expected REJECT)
+email mismatch: REJECT (expected REJECT)
+revoked: REJECT (expected REJECT)
+PGP trust: one full introducer OR two marginal introducers; insufficient signatures => UNKNOWN/UNTRUSTED.
+Note: S/MIME model is an explicit validation checklist; use OpenSSL CMS for interoperable MIME signing/encryption.
+\n[TASK 3] ESP anti-replay window (W=4)
+seq=1 icv=valid => ACCEPT NEW_HIGH_SEQUENCE; highest=1; bitmap=0001
+seq=2 icv=valid => ACCEPT NEW_HIGH_SEQUENCE; highest=2; bitmap=0011
+seq=5 icv=valid => ACCEPT NEW_HIGH_SEQUENCE; highest=5; bitmap=1001
+seq=3 icv=valid => ACCEPT IN_WINDOW_OUT_OF_ORDER; highest=5; bitmap=1101
+seq=2 icv=valid => DROP REPLAY; highest=5; bitmap=1101
+seq=9 icv=valid => ACCEPT NEW_HIGH_SEQUENCE; highest=9; bitmap=0001
+seq=4 icv=valid => DROP TOO_OLD; highest=9; bitmap=0001
+seq=7 icv=invalid => DROP ICV_INVALID; highest=9; bitmap=0001
+seq=7 icv=valid => ACCEPT IN_WINDOW_OUT_OF_ORDER; highest=9; bitmap=0101
+AH/ESP: ESP encrypts payload and may authenticate ESP fields; AH authenticates immutable IP fields but NAT changes complicate AH.
+Transport protects payload; tunnel protects inner IP packet; IKE negotiates/rekeys SAs and keys.
+\n[TASK 4] HTTPS/mTLS hardening checks (policy simulation)
+valid TLS1.3 hostname + client cert: CONNECTED
+expired server certificate: REJECTED
+IP used instead of certificate hostname: REJECTED
+TLS 1.0 only: REJECTED
+no client certificate on protected endpoint: REJECTED
+Required headers: Strict-Transport-Security, Content-Security-Policy, X-Content-Type-Options.
+TLS 1.3 handshake: ClientHello -> ServerHello -> certificate/key exchange -> Finished -> encrypted application data.
+This task records validation outcomes; see README for local OpenSSL certificate and HTTPS server commands.
+\n[TASK 5] SPF, DKIM and DMARC local policy tests
+legitimate: SPF=pass DKIM=pass DMARC=pass
+spoofed host: SPF=fail DKIM=fail DMARC=fail
+mailing-list body changed: SPF=pass DKIM=fail DMARC=pass
+SPF passes other domain: SPF=pass DKIM=fail DMARC=fail
+SPF checks envelope sender/IP; DKIM verifies signed headers/body and signing domain; DMARC checks alignment with visible From.
+\n[TASK 6] Recipient key lifecycle and scaling
+recipients=   1 public_key_wraps=   1 symmetric_encryptions=1
+recipients=   5 public_key_wraps=   5 symmetric_encryptions=1
+recipients=  10 public_key_wraps=  10 symmetric_encryptions=1
+recipients= 100 public_key_wraps= 100 symmetric_encryptions=1
+recipients=1000 public_key_wraps=1000 symmetric_encryptions=1
+doctor1: ELIGIBLE
+doctor2: ELIGIBLE
+doctor3: SKIPPED_EXPIRED
+doctor4: SKIPPED_REVOKED
+doctor5: SKIPPED_MISSING
+At 200,000 subscribers, investigate authenticated portal/group-key delivery; per-recipient wrapping still scales linearly.
+\nAll demonstrations completed. Educational local test data only.
+
+STDERR:
+Spreadsheet runtime warmup failed during python startup
+Traceback (most recent call last):
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/patches/warm_spreadsheet_runtime_on_startup.py", line 26, in warm_spreadsheet_runtime_on_startup
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/spreadsheet_warmup.py", line 785, in warm_spreadsheet_runtime
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/spreadsheet_warmup.py", line 718, in _warm_feature_flows
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/spreadsheet_warmup.py", line 509, in _warm_drawing_and_image_flows
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/generated/interface/models.py", line 32861, in bring_to_front
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/rpc/remote.py", line 764, in __call__
+  File "/tmp/tmp.QlpUkOUI9D/artifact_tool_v2-2.8.66/artifact_tool/rpc/client.py", line 175, in call
+artifact_tool.rpc.client.RemoteError: Element ordering requires an owning element collection.
