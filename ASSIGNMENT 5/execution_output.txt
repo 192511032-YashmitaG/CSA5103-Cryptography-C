@@ -1,0 +1,38 @@
+ASSIGNMENT 5 CO5 – SAFE SYNTHETIC LAB; no real packets or malware.
+\n[B1] STATEFUL FIREWALL
+packet 1: OUT TCP/443 -> ALLOW (ALLOW_HTTPS_OUT), checks=3
+packet 2: IN TCP/51000 -> ALLOW (ESTABLISHED_RETURN), checks=0
+packet 3: IN TCP/22 -> DROP (DEFAULT_DROP), checks=5
+packet 4: OUT TCP/23 -> DROP (DENY_TELNET), checks=1
+packet 5: OUT UDP/53 -> ALLOW (ALLOW_DNS_OUT), checks=2
+packet 6: OUT TCP/8080 -> DROP (DEFAULT_DROP), checks=5
+counters: {'packets': 6, 'rule_evaluations': 16, 'allowed': 3, 'created': 2, 'state_hits': 1, 'dropped': 3}
+connection_table_size: 2
+200-packet rule-evaluation comparison: {'original': 600, 'reordered': 400}
+\n[B3] IDS SIGNATURE AND ANOMALY DETECTION
+event 1: candidate_payload_checks=1, alert=HTTP_MARKER
+event 2: candidate_payload_checks=2, alert=NONE
+event 3: candidate_payload_checks=2, alert=NONE
+signatures=5, events=3, alerts=1
+fragmented marker caveat: requires stream reassembly and protocol normalization.
+sliding-window scan detector:
+t=1 src=10.0.0.20 distinct_hosts=1 distinct_ports=1 -> LOG
+t=2 src=10.0.0.20 distinct_hosts=2 distinct_ports=1 -> LOG
+t=3 src=10.0.0.20 distinct_hosts=3 distinct_ports=1 -> LOG
+t=4 src=10.0.0.20 distinct_hosts=4 distinct_ports=1 -> LOG
+t=5 src=10.0.0.20 distinct_hosts=5 distinct_ports=1 -> ALERT
+t=6 src=10.0.0.21 distinct_hosts=1 distinct_ports=1 -> LOG
+\n[B4] 200-HOST WORM CONTAINMENT SIMULATION
+none: infections_per_step=[1, 3, 9, 27, 81, 200]; step_50pct=5; step_100pct=5
+rate_limit: infections_per_step=[1, 3, 6, 12, 24, 48, 96, 148, 174]; step_50pct=7; step_100pct=None
+segmentation: infections_per_step=[1, 3, 4, 6, 9, 13, 19, 28, 42]; step_50pct=None; step_100pct=None
+limitation: perimeter-only blocking cannot stop lateral spread over permitted internal channels.
+\n[CO5] TLS POLICY AND SET DESIGN
+TLS 1.3 negotiated: ACCEPT
+trusted certificate chain: ACCEPT
+hostname mismatch: REJECT
+expired certificate: REJECT
+obsolete SSL/TLS version: REJECT
+SET participants: cardholder, merchant, issuer, acquirer, payment gateway, certificate authority.
+SET dual signature links order and payment data while separating what merchant and gateway can view.
+\nAll simulation modules completed.
