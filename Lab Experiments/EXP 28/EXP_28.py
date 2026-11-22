@@ -1,0 +1,13 @@
+# EXP 28: Diffie-Hellman key exchange
+p=int(input("Enter prime modulus p (example 23): ") or "23")
+g=int(input("Enter generator g (example 5): ") or "5")
+a=int(input("Enter Alice private value: ") or "6")
+b=int(input("Enter Bob private value: ") or "15")
+A=pow(g,a,p); B=pow(g,b,p)
+key_alice=pow(B,a,p); key_bob=pow(A,b,p)
+print("Alice public value:",A)
+print("Bob public value:",B)
+print("Alice shared key:",key_alice)
+print("Bob shared key:",key_bob)
+print("Key exchange successful:",key_alice==key_bob)
+print("Security relies on the difficulty of the discrete logarithm problem; use authenticated, large modern groups in practice.")
